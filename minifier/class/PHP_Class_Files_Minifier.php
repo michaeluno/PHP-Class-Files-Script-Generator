@@ -8,7 +8,10 @@
  * @copyright   2013-2014 (c) Michael Uno
  * @license     MIT	<http://opensource.org/licenses/MIT>
  */
- 
+if ( ! class_exists( 'PHP_Class_Files_Script_Generator_Base' ) ) {
+	require( dirname( dirname( dirname( __FILE__ ) ) ) . '/php_class_files_script_generator/PHP_Class_Files_Script_Generator_Base.php' );
+}
+
 /**
  * Creates a minified version of PHP scripts from the given PHP class directory.
  * 
