@@ -1,8 +1,7 @@
 <?php
 /**
- * The example script of the minifier script.
- * 
- * Note that this is not ready to be used for anybody.
+ * Minifies PHP files into a single file.
+ *
  */
 
 /* Set necessary paths */
@@ -12,7 +11,7 @@ $sResultFilePath	= $sTargetBaseDir . '/library/admin-page-framework.min.php';
 $sLicenseFileName	= 'MIT-LICENSE.txt';
 $sLicenseFilePath	= $sTargetDir . '/' . $sLicenseFileName;
 $sHeaderClassName	= 'AdminPageFramework_MinifiedVersionHeader';
-$sHeaderClassPath	= $sTargetDir . '/_model/AdminPageFramework_MinifiedVersionHeader.php';
+$sHeaderClassPath	= $sTargetDir . '/document/AdminPageFramework_MinifiedVersionHeader.php';
 
 // For get about the rest.
 
@@ -50,6 +49,12 @@ new PHP_Class_Files_Minifier(
 			'AdminPageFramework_InclusionClassFilesHeader',
 			'admin-page-framework-include-class-list',
 		),
+		'search'			=>	array(
+			'allowed_extensions'	=>	array( 'php' ),	// e.g. array( 'php', 'inc' )
+			// 'exclude_dir_paths'		=>	array( $sTargetBaseDir . '/include/class/admin' ),
+			'exclude_dir_names'		=>	array( '_document', 'document' ),
+			'is_recursive'			=>	true,
+		),			        
 	)
 );
 
