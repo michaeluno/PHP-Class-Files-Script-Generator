@@ -8,10 +8,10 @@
 $sTargetBaseDir		= dirname( dirname( dirname( __FILE__ ) ) );
 $sTargetDir			= $sTargetBaseDir . '/development';
 $sResultFilePath	= $sTargetBaseDir . '/library/admin-page-framework.min.php';
-$sLicenseFileName	= 'MIT-LICENSE.txt';
+$sLicenseFileName	= 'LICENSE.txt';
 $sLicenseFilePath	= $sTargetDir . '/' . $sLicenseFileName;
 $sHeaderClassName	= 'AdminPageFramework_MinifiedVersionHeader';
-$sHeaderClassPath	= $sTargetDir . '/document/AdminPageFramework_MinifiedVersionHeader.php';
+$sHeaderClassPath	= $sTargetDir . '/factory/AdminPageFramework_Factory/model/AdminPageFramework_MinifiedVersionHeader.php';
 
 // For get about the rest.
 
@@ -45,7 +45,6 @@ new PHP_Class_Files_Minifier(
 		'output_buffer'		=>	true,
 		'header_type'		=>	'CONSTANTS',	
 		'exclude_classes'	=>	array(
-			'AdminPageFramework_MinifiedVersionHeader', 
 			'AdminPageFramework_InclusionClassFilesHeader',
 			'admin-page-framework-include-class-list',
 		),
