@@ -3,7 +3,7 @@
  * PHP Class Files Inclusion List Creator
  * 
  * @author		Michael Uno <michael@michaeluno.jp>
- * @copyright	2013-2014 (c) Michael Uno
+ * @copyright	2013-2016 (c) Michael Uno
  * @license		MIT	<http://opensource.org/licenses/MIT>
  */
 if ( ! class_exists( 'PHP_Class_Files_Script_Generator_Base' ) ) {
@@ -16,7 +16,7 @@ if ( ! class_exists( 'PHP_Class_Files_Script_Generator_Base' ) ) {
  * This is meant to be used for the callback function for the spl_autoload_register() function.
  *  
  * @remark		The parsed class file must have a name of the class defined in the file.
- * @version		1.0.2
+ * @version		1.0.3
  */
 class PHP_Class_Files_Inclusion_Script_Creator extends PHP_Class_Files_Script_Generator_Base {
 	
@@ -64,18 +64,18 @@ class PHP_Class_Files_Inclusion_Script_Creator extends PHP_Class_Files_Script_Ge
 	 * 
 	 * When false is passed to the 'use_docblock' argument, the constants of the header class must include 'Version', 'Name', 'Description', 'URI', 'Author', 'CopyRight', 'License'. 
 	 * <h3>Example</h3>
-	 * <code>class TaskScheduler_Registry_Base {
-	 * 		const Version		= '1.0.0b08';
-	 * 		const Name			= 'Task Scheduler';
-	 * 		const Description	= 'Provides an enhanced task management system for WordPress.';
-	 * 		const URI			= 'http://en.michaeluno.jp/';
-	 * 		const Author		= 'miunosoft (Michael Uno)';
-	 * 		const AuthorURI		= 'http://en.michaeluno.jp/';
-	 * 		const CopyRight		= 'Copyright (c) 2014, <Michael Uno>';
-	 * 		const License		= 'GPL v2 or later';
-	 * 		const Contributors	= '';
-	 * }</code>
-	 */
+     * <code>class TaskScheduler_Registry_Base {
+     *         const VERSION        = '1.0.0b08';
+     *         const NAME           = 'Task Scheduler';
+     *         const DESCRIPTION    = 'Provides an enhanced task management system for WordPress.';
+     *         const URI            = 'http://en.michaeluno.jp/';
+     *         const AUTHOR         = 'miunosoft (Michael Uno)';
+     *         const AUTHOR_URI     = 'http://en.michaeluno.jp/';
+     *         const COPYRIGHT      = 'Copyright (c) 2014, <Michael Uno>';
+     *         const LICENSE        = 'GPL v2 or later';
+     *         const CONTRIBUTORS   = '';
+     * }</code>
+     */
 	public function __construct( $sBaseDirPath, $asScanDirPaths, $sOutputFilePath, array $aOptions=array() ) {
 
 		$aOptions			= $aOptions + self::$_aStructure_Options;
@@ -115,14 +115,14 @@ class PHP_Class_Files_Inclusion_Script_Creator extends PHP_Class_Files_Script_Ge
 	}
 							
 	public function sort( array $aFiles, array $aExcludingClassNames ) {
-		
+
+        $aFiles = $this->_extractDefinedClasses( $aFiles, $aExcludingClassNames );
+    
 		foreach( $aFiles as $_sClassName => $_aFile ) {
 			if ( in_array( $_sClassName, $aExcludingClassNames ) ) {
 				unset( $aFiles[ $_sClassName ] );
 			}
 		}
-		
-		$aFiles = $this->_extractDefinedClasses( $aFiles, $aExcludingClassNames );
 		
 		return $aFiles;
 	
@@ -157,10 +157,10 @@ class PHP_Class_Files_Inclusion_Script_Creator extends PHP_Class_Files_Script_Ge
 			
 		// Insert the data
 		foreach( $aFiles as $_sClassName => $_aFile ) {					
-			$_sPath		= str_replace('\\', '/', $_aFile['path'] );
+			$_sPath		= str_replace( '\\', '/', $_aFile[ 'path' ] );
 			$_sPath		= $this->_getRelativePath( $sBaseDirPath, $_sPath );
-			$_aData[]	= "\t" . '"' . $_sClassName . '"' . "\t" . '=>' 
-				. "\t" . $sBaseDirVar . ' . "' . $_sPath . '", ' . PHP_EOL;
+			$_aData[]	= "    " . '"' . $_sClassName . '"' . '=>' 
+				. " " . $sBaseDirVar . ' . "' . $_sPath . '", ' . PHP_EOL;
 		}
 		
 		// Close the array declaration
@@ -174,7 +174,7 @@ class PHP_Class_Files_Inclusion_Script_Creator extends PHP_Class_Files_Script_Ge
 		// Write to a file.
 		file_put_contents( 
             $sOutputFilePath, 
-            trim( implode( '', $_aData ) ), 
+            trim( implode( '', $_aData ) ) . PHP_EOL, 
             FILE_APPEND | LOCK_EX
         );
 		
