@@ -18,7 +18,7 @@ if ( ! class_exists( 'PHP_Class_Files_Script_Generator_Base' ) ) {
  * @remark		The parsed class file must have a name of the class defined in the file.
  * @version		1.0.3
  */
-class PHP_Class_Files_Inclusion_Script_Creator extends PHP_Class_Files_Script_Generator_Base {
+class PHP_Class_Files_Inclusion_List_Creator extends PHP_Class_Files_Script_Generator_Base {
 	
 	static protected $_aStructure_Options = array(
 	
@@ -87,61 +87,54 @@ class PHP_Class_Files_Inclusion_Script_Creator extends PHP_Class_Files_Script_Ge
 			echo 'Searching files under the directories: ' . implode( ', ', $_aScanDirPaths ) . $_sCarriageReturn;
 		}
 		
-		/* Store the file contents into an array. */
-		$_aFilePaths	= $this->_getFileLists( $_aScanDirPaths, $aOptions['search'] );	
+		// 1. Store file contents into an array.
+		$_aFilePaths	= $this->_getFileLists( $_aScanDirPaths, $aOptions['search'] );
 		$_aFiles		= $this->_formatFileArray( $_aFilePaths );
 		unset( $_aFiles[ pathinfo( $sOutputFilePath, PATHINFO_FILENAME ) ] );	// it's possible that the minified file also gets loaded but we don't want it.
-
-		if ( $aOptions['output_buffer'] ) {
+		if ( $aOptions[ 'output_buffer' ] ) {
 			echo sprintf( 'Found %1$s file(s)', count( $_aFiles ) ) . $_sCarriageReturn;
 		}			
 	
-		/* Generate the output script header comment */
+		// 2. Generate the output script header comment
 		$_sHeaderComment = $this->_getHeaderComment( $_aFiles, $aOptions );
-		if ( $aOptions['output_buffer'] ) {
+		if ( $aOptions[ 'output_buffer' ] ) {
 			echo( $_sHeaderComment ) . $_sCarriageReturn;
 		}
 	
-		/* Sort the classes - in some PHP versions, parent classes must be defined before extended classes. */
-		$_aFiles = $this->sort( $_aFiles, $aOptions['exclude_classes'] );
-		
-		if ( $aOptions['output_buffer'] ) {
+		// 3. Sort the classes - in some PHP versions, parent classes must be defined before extended classes.
+		$_aFiles = $this->sort( $_aFiles, $aOptions[ 'exclude_classes' ] );
+		if ( $aOptions[ 'output_buffer' ] ) {
 			echo sprintf( 'Sorted %1$s file(s)', count( $_aFiles ) ) . $_sCarriageReturn;			
 		}				
 		
-		/* Write to a file */
-		$this->write( $_aFiles, $sBaseDirPath, $sOutputFilePath, $_sHeaderComment, $aOptions['output_var_name'], $aOptions['base_dir_var'] );
+		// 4. Write to a file
+		$this->write( $_aFiles, $sBaseDirPath, $sOutputFilePath, $_sHeaderComment, $aOptions[ 'output_var_name' ], $aOptions[ 'base_dir_var' ] );
 		
 	}
 							
 	public function sort( array $aFiles, array $aExcludingClassNames ) {
 
-        $aFiles = $this->_extractDefinedClasses( $aFiles, $aExcludingClassNames );
-    
+        $aFiles = $this->___getDefinedClassesExtracted( $aFiles, $aExcludingClassNames );
 		foreach( $aFiles as $_sClassName => $_aFile ) {
 			if ( in_array( $_sClassName, $aExcludingClassNames ) ) {
 				unset( $aFiles[ $_sClassName ] );
 			}
 		}
-		
 		return $aFiles;
 	
 	}
-		private function _extractDefinedClasses( array $aFiles, array $aExcludingClassNames ) {
+		private function ___getDefinedClassesExtracted( array $aFiles, array $aExcludingClassNames ) {
 			
 			$_aAdditionalClasses = array();
 			foreach( $aFiles as $_sClassName => $_aFile ) {
-				foreach( $_aFile['defined_classes'] as $_sAdditionalClass ) {
-					if ( isset( $aFiles[ $_sAdditionalClass ] ) ) { 
-                        continue; 
-                    }
+				foreach( $_aFile[ 'defined_classes' ] as $_sAdditionalClass ) {
                     if ( in_array( $_sAdditionalClass, $aExcludingClassNames ) ) {
                         continue;
                     }                    
 					$_aAdditionalClasses[ $_sAdditionalClass ] = $_aFile;
 				}
 			}
-			return $aFiles + $_aAdditionalClasses;
+			return $_aAdditionalClasses;
 			
 		}
 			
@@ -158,9 +151,9 @@ class PHP_Class_Files_Inclusion_Script_Creator extends PHP_Class_Files_Script_Ge
 		// Insert the data
 		foreach( $aFiles as $_sClassName => $_aFile ) {					
 			$_sPath		= str_replace( '\\', '/', $_aFile[ 'path' ] );
-			$_sPath		= $this->_getRelativePath( $sBaseDirPath, $_sPath );
-			$_aData[]	= "    " . '"' . $_sClassName . '"' . '=>' 
-				. " " . $sBaseDirVar . ' . "' . $_sPath . '", ' . PHP_EOL;
+			$_sPath		= $this->___getRelativePath( $sBaseDirPath, $_sPath );
+			$_aData[]	= "    " . '"' . $_sClassName . '"' . ' => '
+				. $sBaseDirVar . ' . "' . $_sPath . '", ' . PHP_EOL;
 		}
 		
 		// Close the array declaration
@@ -184,7 +177,7 @@ class PHP_Class_Files_Inclusion_Script_Creator extends PHP_Class_Files_Script_Ge
 		 * Calculates the relative path from the given path.
 		 * 
 		 */
-		private function _getRelativePath( $from, $to ) {
+		private function ___getRelativePath( $from, $to ) {
 			
 			// some compatibility fixes for Windows paths
 			$from = is_dir($from) ? rtrim($from, '\/') . '/' : $from;

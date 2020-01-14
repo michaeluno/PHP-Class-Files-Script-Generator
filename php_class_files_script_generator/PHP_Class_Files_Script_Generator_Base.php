@@ -55,7 +55,7 @@ abstract class PHP_Class_Files_Script_Generator_Base {
          * 
          * @deprecated The directory iterator cannot filter out certain directories in some PHP versions.
          */
-        private function __getFileList( $sDirPath, $sFilePathRegexNeedle ) {
+        private function ___getFileList( $sDirPath, $sFilePathRegexNeedle ) {
             
             $sDirPath = rtrim( $sDirPath, '\\/' );
             $_aFileList = array();
@@ -87,9 +87,9 @@ abstract class PHP_Class_Files_Script_Generator_Base {
             $_aExcludingDirPaths = $this->_formatPaths( $aSearchOptions['exclude_dir_paths'] );
             
             if ( defined( 'GLOB_BRACE' ) ) {    // in some OSes this flag constant is not available.
-                $_sFileExtensionPattern = $this->_getGlobPatternExtensionPart( $aSearchOptions['allowed_extensions'] );
+                $_sFileExtensionPattern = $this->___getGlobPatternExtensionPart( $aSearchOptions['allowed_extensions'] );
                 $_aFilePaths = $aSearchOptions[ 'is_recursive' ]
-                    ? $this->doRecursiveGlob( 
+                    ? $this->___doRecursiveGlob( 
                         $sDirPath . '*.' . $_sFileExtensionPattern, 
                         GLOB_BRACE, 
                         $_aExcludingDirPaths, 
@@ -104,7 +104,7 @@ abstract class PHP_Class_Files_Script_Generator_Base {
             $_aFilePaths = array();
             foreach( $aSearchOptions['allowed_extensions'] as $__sAllowedExtension ) {
                 $__aFilePaths = $aSearchOptions[ 'is_recursive' ]
-                    ? $this->doRecursiveGlob( 
+                    ? $this->___doRecursiveGlob( 
                         $sDirPath . '*.' . $__sAllowedExtension, 
                         0, 
                         $_aExcludingDirPaths, 
@@ -141,11 +141,11 @@ abstract class PHP_Class_Files_Script_Generator_Base {
             /**
              * The recursive version of the glob() function.
              */
-            private function doRecursiveGlob( $sPathPatten, $nFlags=0, array $aExcludeDirPaths=array(), array $aExcludeDirNames=array(), array $aExcludeFileNames=array() ) {
+            private function ___doRecursiveGlob( $sPathPatten, $nFlags=0, array $aExcludeDirPaths=array(), array $aExcludeDirNames=array(), array $aExcludeFileNames=array() ) {
 
                 $_aFiles    = glob( $sPathPatten, $nFlags );    
                 $_aFiles    = is_array( $_aFiles ) ? $_aFiles : array();    // glob() can return false.
-                $_aFiles    = $this->_dropExcludingFiles( $_aFiles, $aExcludeFileNames );
+                $_aFiles    = $this->___dropExcludingFiles( $_aFiles, $aExcludeFileNames );
                 $_aDirs     = glob( 
                     dirname( $sPathPatten ) . DIRECTORY_SEPARATOR . '*', 
                     GLOB_ONLYDIR|GLOB_NOSORT
@@ -161,7 +161,7 @@ abstract class PHP_Class_Files_Script_Generator_Base {
                     } 
                     $_aFiles    = array_merge( 
                         $_aFiles, 
-                        $this->doRecursiveGlob( 
+                        $this->___doRecursiveGlob( 
                             $_sDirPath . DIRECTORY_SEPARATOR . basename( $sPathPatten ), 
                             $nFlags, 
                             $aExcludeDirPaths,
@@ -179,7 +179,7 @@ abstract class PHP_Class_Files_Script_Generator_Base {
                  * @since       1.0.6
                  * @return      array
                  */
-                private function _dropExcludingFiles( array $aFiles, array $aExcludingFileNames=array() ) {
+                private function ___dropExcludingFiles( array $aFiles, array $aExcludingFileNames=array() ) {
                     if ( empty( $aExcludingFileNames ) ) {
                         return $aFiles;
                     }
@@ -194,7 +194,7 @@ abstract class PHP_Class_Files_Script_Generator_Base {
             /**
              * Constructs the file pattern of the file extension part used for the glob() function with the given file extensions.
              */
-            private function _getGlobPatternExtensionPart( array $aExtensions=array( 'php', 'inc' ) ) {
+            private function ___getGlobPatternExtensionPart( array $aExtensions=array( 'php', 'inc' ) ) {
                 return empty( $aExtensions ) 
                     ? '*'
                     : '{' . implode( ',', $aExtensions ) . '}';
@@ -218,7 +218,7 @@ abstract class PHP_Class_Files_Script_Generator_Base {
         foreach( $_aFilePaths as $_sFilePath ) {
             
             $_sClassName    = pathinfo( $_sFilePath, PATHINFO_FILENAME );
-            $_sPHPCode      = $this->getPHPCode( $_sFilePath );
+            $_sPHPCode      = $this->_getPHPCode( $_sFilePath );
             $_aFiles[ $_sClassName ] = array(    // the file name without extension will be assigned to the key
                 'path'              => $_sFilePath,    
                 'code'              => $_sPHPCode ? trim( $_sPHPCode ) : '',
@@ -237,7 +237,7 @@ abstract class PHP_Class_Files_Script_Generator_Base {
          * 
          * @remark      Enclosing `<?php ?>` tags will be removed.
          */
-        protected function getPHPCode( $sFilePath ) {
+        protected function _getPHPCode( $sFilePath ) {
             $_sCode = php_strip_whitespace( $sFilePath );
             $_sCode = preg_replace( '/^<\?php/', '', $_sCode );
             $_sCode = preg_replace( '/\?>\s+?$/', '', $_sCode );
@@ -246,33 +246,58 @@ abstract class PHP_Class_Files_Script_Generator_Base {
                     
         /**
          * Returns an array holding class names defined in the given PHP code.
+         * @return  array
          */
         protected function _getDefinedClasses( $sPHPCode ) {
-            preg_match_all( '/(^|\s)class\s+(.+?)\s+/i', $sPHPCode, $aMatch );
-            return $aMatch[ 2 ];                        
+            preg_match_all( '/(^|\s)class\s+(.+?)\s+/i', $sPHPCode, $_aMatch );
+            return $_aMatch[ 2 ];
         }
         /**
-         * Retrieves defined PHP class names using the `token_get_all` funciton.
+         * Retrieves defined PHP class names using the `token_get_all` function.
          * 
          * @remark      The passed code must start with the `<?php ` opening tag.
+         * @return      array
          */
         protected function _getDefinedClasses_token_get_all( $sPHPCode ) {
+
             $_aClasses  = array();
             $_aTokens   = token_get_all( $sPHPCode );
             $_iCount    = count( $_aTokens );
+            $_sCurrentNameSpace = '';
             for ( $i = 2; $i < $_iCount; $i++ ) {
-                if (   
-                    $_aTokens[ $i - 2 ][ 0 ] == T_CLASS
-                    && $_aTokens[ $i - 1 ][ 0 ] == T_WHITESPACE
-                    && $_aTokens[ $i ][ 0 ] == T_STRING
+
+                if ( T_NAMESPACE === $_aTokens[ $i ][ 0 ] ) {
+                    $_sCurrentNameSpace = $this->___getNamespaceExtractedFromTokens( $_aTokens, $i, $_iCount ) . '\\';
+                }
+                if (
+                    T_CLASS === $_aTokens[ $i - 2 ][ 0 ]
+                    && T_WHITESPACE === $_aTokens[ $i - 1 ][ 0 ]
+                    && T_STRING === $_aTokens[ $i ][ 0 ]
                 ) {
                     $_sClassName = $_aTokens[ $i ][ 1 ];
-                    $_aClasses[] = $_sClassName;
+                    $_aClasses[] = $_sCurrentNameSpace . $_sClassName;
+                    if ( ! $_sCurrentNameSpace ) {
+                        $_aClasses[] = '\\' . $_sClassName; // global namespace; no heading backslash version is added also for backward-compatibility with PHP v5.2.x.
+                    }
                 }
+
             }
             return $_aClasses;
             
         }        
+            private function ___getNamespaceExtractedFromTokens( array $aTokens, $i, $iCount ) {
+                $_sNamespace = '';
+                while ( ++$i < $iCount ) {
+                    if ( $aTokens [ $i ] === ';') {
+                        $_sNamespace = trim( $_sNamespace );
+                        break;
+                    }
+                    $_sNamespace .= is_array( $aTokens[ $i ] )
+                        ? $aTokens[ $i ][ 1 ]
+                        : $aTokens[ $i ];
+                }
+                return $_sNamespace;
+            }
         /**
          * Returns the parent class
          */
@@ -289,7 +314,7 @@ abstract class PHP_Class_Files_Script_Generator_Base {
     protected function _getHeaderComment( $aFiles, $aOptions )     {
 
         if ( $aOptions['header_class_path'] && $aOptions['header_class_name'] ) {
-            return $this->__getHeaderComment( 
+            return $this->___getHeaderComment( 
                 $aOptions['header_class_path'],
                 $aOptions['header_class_name'],
                 $aOptions['header_type']
@@ -297,7 +322,7 @@ abstract class PHP_Class_Files_Script_Generator_Base {
         }
         
         if ( $aOptions['header_class_name'] ) {
-            return $this->__getHeaderComment( 
+            return $this->___getHeaderComment( 
                 isset( $aFiles[ $aOptions['header_class_name'] ] ) ? $aFiles[ $aOptions['header_class_name'] ][ 'path' ] : $aOptions['header_class_path'],
                 $aOptions['header_class_name'],
                 $aOptions['header_type']
@@ -305,9 +330,9 @@ abstract class PHP_Class_Files_Script_Generator_Base {
         } 
         
         if ( $aOptions['header_class_path'] ) {
-            $_aDefinedClasses    = $this->_getDefinedClasses( $this->getPHPCode( $aOptions['header_class_path'] ) );
+            $_aDefinedClasses    = $this->_getDefinedClasses( $this->_getPHPCode( $aOptions['header_class_path'] ) );
             $_sHeaderClassName    = isset( $_aDefinedClasses[ 0 ] ) ? $_aDefinedClasses[ 0 ] : '';
-            return $this->__getHeaderComment( 
+            return $this->___getHeaderComment( 
                 $aOptions['header_class_path'],
                 $_sHeaderClassName,
                 $aOptions['header_type']
@@ -318,7 +343,7 @@ abstract class PHP_Class_Files_Script_Generator_Base {
         /**
          * Generates the script heading comment.
          */
-        protected function __getHeaderComment( $sFilePath, $sClassName, $sHeaderType='DOCKBLOCK' ) {
+        private function ___getHeaderComment( $sFilePath, $sClassName, $sHeaderType='DOCKBLOCK' ) {
 
             if ( ! file_exists( $sFilePath ) ) { 
                 return ''; 
@@ -381,12 +406,19 @@ abstract class PHP_Class_Files_Script_Generator_Base {
      * @since       1.0.6
      * @return      void
      */
-    protected function output( $sText, array $aOptions ) {
-        if ( ! $aOptions['output_buffer'] ) {
+    protected function _output( $sText, array $aOptions ) {
+        if ( ! $aOptions[ 'output_buffer' ] ) {
             return;
         }
-        echo $sText . $aOptions['carriage_return'];
-    }        
+        echo $sText . $aOptions[ 'carriage_return' ];
+    }
+
+    /**
+     * @deprecated 1.1.0
+     */
+    protected function output( $sText, array $aOptions ) {
+        $this->_output( $sText, $aOptions );
+    }
     
     /**
      * @since       1.0.7

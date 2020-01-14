@@ -2,7 +2,7 @@
 
 /* Configuration */
 $sTargetBaseDir		= dirname( dirname( dirname( __FILE__ ) ) );
-$sResultFilePath	= $sTargetBaseDir . '/development/admin-page-framework-include-class-list.php';
+$sResultFilePath	= $sTargetBaseDir . '/class-list.php';
 
 /* If accessed from a browser, exit. */
 $bIsCLI				= php_sapi_name() == 'cli';
@@ -25,9 +25,9 @@ if (
 
 /* Create a minified version of the framework. */
 echo 'Started...' . $sCarriageReturn;
-new PHP_Class_Files_Inclusion_Script_Creator(
-	$sTargetBaseDir . '/development',
-	array( $sTargetBaseDir . '/development', ), 	// scan directory paths
+new PHP_Class_Files_Inclusion_List_Creator(
+	$sTargetBaseDir . '/',
+	array( $sTargetBaseDir . '/', ), 	// scan directory paths
 	$sResultFilePath, 
 	array(
 		'header_class_name'	=>	'AdminPageFramework_InclusionClassFilesHeader',
@@ -35,11 +35,11 @@ new PHP_Class_Files_Inclusion_Script_Creator(
 		'header_type'		=>	'CONSTANTS',	
 		'exclude_classes'	=>	array( 'AdminPageFramework_MinifiedVersionHeader', 'AdminPageFramework_InclusionClassFilesHeader', 'admin-page-framework' ),
 		// 'output_var_name'	=>	'$aAdminPageFramework_Inclusion_Class_Files',
-		'base_dir_var'  	=>	'AdminPageFramework_Registry::$sDirPath',
+		'base_dir_var'  	=>	'Test\Registry::$sDirPath',
 		'search'			=>	array(
 			'allowed_extensions'	=>	array( 'php' ),	// e.g. array( 'php', 'inc' )
 			// 'exclude_dir_paths'		=>	array( $sTargetBaseDir . '/include/class/admin' ),
-			'exclude_dir_names'		=>	array(),
+			'exclude_dir_names'		=>	array( 'PHP-Class-Files-Script-Generator', 'examples' ),
 			'is_recursive'			=>	true,
 		),			
 	)

@@ -1,5 +1,8 @@
 ## CHange Log
 
+### 1.1.0 
+- Supported namespaces to be prefixed before class names. Global namespace classes have two entries; one is with a heading backslash and the other is without it.
+
 ### 1.0.8 - 2015/12/10
 - Added a method to format a path.
 

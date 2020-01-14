@@ -27,7 +27,7 @@ if (
 
 /* Create a minified version of the framework. */
 echo 'Generating an lnclusion list.' . $sCarriageReturn;
-new PHP_Class_Files_Inclusion_Script_Creator(
+new PHP_Class_Files_Inclusion_List_Creator(
     $sTargetScanDir,
     array( $sTargetScanDir, ),     // scan directory paths
     $sResultFilePath, 

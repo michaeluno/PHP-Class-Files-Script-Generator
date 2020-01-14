@@ -12,7 +12,7 @@ if ( ! $bIsCLI ) { exit; }
 
 /* Include necessary files */
 require( dirname( dirname( __FILE__ ) ) . '/php_class_files_script_creator/PHP_Class_Files_Script_Creator_Base.php' );
-require( dirname( __FILE__ ) . '/class/PHP_Class_Files_Inclusion_Script_Creator.php' );
+require( dirname( __FILE__ ) . '/class/PHP_Class_Files_Inclusion_List_Creator.php' );
 		
 /* Check the permission to write. */
 if ( ! file_exists( $sResultFilePath ) ) {
@@ -29,7 +29,7 @@ if (
 echo 'Started...' . $sCarriageReturn;
 
 // for the front-end
-new PHP_Class_Files_Inclusion_Script_Creator(
+new PHP_Class_Files_Inclusion_List_Creator(
 	$sTargetBaseDir,
 	array( $sTargetBaseDir . '/include/library', $sTargetBaseDir . '/include/class' ), 	// scan directory paths
 	$sResultFilePath, 
@@ -56,7 +56,7 @@ new PHP_Class_Files_Inclusion_Script_Creator(
 	)
 );
 // for admin pages
-new PHP_Class_Files_Inclusion_Script_Creator( 
+new PHP_Class_Files_Inclusion_List_Creator(
 	$sTargetBaseDir,
 	array( $sTargetBaseDir . '/include/class/admin' ), 	// scan directory paths
 	$sResultFilePath_2, 

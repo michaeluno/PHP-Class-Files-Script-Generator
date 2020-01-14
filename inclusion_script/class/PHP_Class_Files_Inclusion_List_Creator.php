@@ -12,7 +12,7 @@
  *  
  * @remark	The parsed class file must have a name of the class defined in the file.
  */
-class PHP_Class_Files_Inclusion_Script_Creator extends PHP_Class_Files_Script_Generator_Base {
+class PHP_Class_Files_Inclusion_List_Creator extends PHP_Class_Files_Script_Generator_Base {
 	
 	static protected $_aStructure_Options = array(
 	
